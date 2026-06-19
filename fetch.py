@@ -26,14 +26,15 @@ rows = []
 for t in tickers:
     try:
         df = stock.get_market_trading_value_by_date(fromdate, todate, t)
-        f_ = int(df["외국인"].sum() / 1e8)
+        f_ = int(df["외국인합계"].sum() / 1e8)
         i_ = int(df["기관합계"].sum() / 1e8)
         if   f_ > 0 and i_ > 0: v = "🟢쌍끌이매수"
         elif f_ < 0 and i_ < 0: v = "🔴쌍끌이매도"
         elif f_ + i_ > 0:       v = "🟡순매수"
         else:                   v = "↔️중립"
         rows.append([t, f_, i_, v])
-    except Exception:
+    except Exception as e:
+        print(f"[{t}] 오류: {e}")
         rows.append([t, "", "", "오류"])
     time.sleep(0.3)
 
