@@ -35,7 +35,7 @@ for t in tickers:
         rows.append([t, f_, i_, v])
     except Exception as e:
         print(f"[{t}] 오류: {e}")
-        rows.append([t, "", "", "오류"])
+        rows.append([t, "", "", ""])
     time.sleep(0.3)
 
 with open("supply.csv", "w", newline="", encoding="utf-8") as fp:
