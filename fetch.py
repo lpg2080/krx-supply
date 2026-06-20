@@ -25,21 +25,17 @@ fromdate = (datetime.today() - timedelta(days=14)).strftime("%Y%m%d")
 rows = []
 for t in tickers:
     try:
-        df = stock.get_market_trading_value_by_date(fromdate, todate, t).tail(5)
-        f_ = int(df["외국인합계"].sum() / 1e8)
-        i_ = int(df["기관합계"].sum() / 1e8)
-        if   f_ > 0 and i_ > 0: v = "🟢쌍끌이매수"
-        elif f_ < 0 and i_ < 0: v = "🔴쌍끌이매도"
-        elif f_ + i_ > 0:       v = "🟡순매수"
-        else:                   v = "↔️중립"
-        rows.append([t, f_, i_, v])
+        flow = stock.get_market_trading_value_by_date(fromdate, todate, t).tail(5)
+        f_ = int(flow["외국인합계"].sum() / 1e8)
+        i_ = int(flow["기관합계"].sum() / 1e8)
+        rows.append([t, f_, i_])
     except Exception as e:
         print(f"[{t}] 오류: {e}")
-        rows.append([t, "", "", ""])
+        rows.append([t, "", ""])
     time.sleep(0.3)
 
 with open("supply.csv", "w", newline="", encoding="utf-8") as fp:
     w = csv.writer(fp)
-    w.writerow(["종목코드", "외국인순매수", "기관순매수", "수급주체"])
+    w.writerow(["종목코드", "외국인순매수", "기관순매수"])
     w.writerows(rows)
 print("done")
