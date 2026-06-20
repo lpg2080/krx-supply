@@ -20,12 +20,12 @@ tickers = [
 ]
 
 todate   = datetime.today().strftime("%Y%m%d")
-fromdate = (datetime.today() - timedelta(days=10)).strftime("%Y%m%d")
+fromdate = (datetime.today() - timedelta(days=14)).strftime("%Y%m%d")
 
 rows = []
 for t in tickers:
     try:
-        df = stock.get_market_trading_value_by_date(fromdate, todate, t)
+        df = stock.get_market_trading_value_by_date(fromdate, todate, t).tail(5)
         f_ = int(df["외국인합계"].sum() / 1e8)
         i_ = int(df["기관합계"].sum() / 1e8)
         if   f_ > 0 and i_ > 0: v = "🟢쌍끌이매수"
