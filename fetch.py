@@ -1,7 +1,6 @@
 from pykrx import stock
 from datetime import datetime, timedelta
 import csv, time
-
 tickers = [
     "005930", "352820", "178920", "036570", "108320", "064260", "485540",
     "411060", "376300", "361610", "462870", "002310", "336260", "138930",
@@ -18,24 +17,26 @@ tickers = [
     "066970", "277810", "454910", "108490", "090360", "058610", "035420",
     "035720", "373220", "267250", "278470", "003230", "004370", "003490",
 ]
-
 todate   = datetime.today().strftime("%Y%m%d")
-fromdate = (datetime.today() - timedelta(days=14)).strftime("%Y%m%d")
-
+fromdate = (datetime.today() - timedelta(days=40)).strftime("%Y%m%d")   # ← 14→40 (20거래일 확보)
 rows = []
 for t in tickers:
     try:
-        flow = stock.get_market_trading_value_by_date(fromdate, todate, t).tail(5)
-        f_ = int(flow["외국인합계"].sum() / 1e8)
-        i_ = int(flow["기관합계"].sum() / 1e8)
-        rows.append([t, f_, i_])
+        flow = stock.get_market_trading_value_by_date(fromdate, todate, t)   # ← .tail(5) 제거
+        d1, d5, d20 = flow.tail(1), flow.tail(5), flow.tail(20)
+        f_  = int(d5["외국인합계"].sum() / 1e8)          # 5일 (엔진)
+        i_  = int(d5["기관합계"].sum() / 1e8)
+        f1  = round(d1["외국인합계"].sum() / 1e8, 1)      # 당일 (관찰)
+        i1  = round(d1["기관합계"].sum() / 1e8, 1)
+        f20 = round(d20["외국인합계"].sum() / 1e8, 1)     # 20일 (관찰)
+        i20 = round(d20["기관합계"].sum() / 1e8, 1)
+        rows.append([t, f_, i_, f1, i1, f20, i20])
     except Exception as e:
         print(f"[{t}] 오류: {e}")
-        rows.append([t, "", ""])
+        rows.append([t, "", "", "", "", "", ""])
     time.sleep(0.3)
-
 with open("supply.csv", "w", newline="", encoding="utf-8") as fp:
     w = csv.writer(fp)
-    w.writerow(["종목코드", "외국인순매수", "기관순매수"])
+    w.writerow(["종목코드", "외국인순매수", "기관순매수", "외인당일", "기관당일", "외인20일", "기관20일"])
     w.writerows(rows)
 print("done")
