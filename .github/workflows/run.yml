@@ -3,7 +3,8 @@ name: krx-supply
 on:
   schedule:
     - cron: "23 10 * * 1-5"
-    - cron: "47 10 * * 1-5"
+    - cron: "31 10 * * 1-5"
+    - cron: "35 22 * * 0-4"
   workflow_dispatch:
 
 permissions:
